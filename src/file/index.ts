@@ -50,7 +50,7 @@ class FileBufferImpl implements FileBuffer {
       this.next = this._readBuffer(this.position + bufferSize)
       newPosition = this.position + bufferSize / 2
     }
-    console.log(`Read ${newPosition < this.position ? "PREV" : "NEXT"} ${this.position}->${this.next}`)
+    console.log(`Read ${newPosition < this.position ? "PREV" : "NEXT"} ${this.position}->${newPosition}`)
     this.position = newPosition
   }
 
