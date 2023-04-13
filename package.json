@@ -21,12 +21,14 @@
     "@fluentui/react-components": "^9.18.8",
     "clsx": "^1.2.1",
     "electron-updater": "^5.3.0",
+    "memoize-one": "^6.0.0",
     "pretty-bytes": "^6.1.0",
     "react-virtualized": "^9.22.4",
     "react-virtualized-auto-sizer": "^1.0.14",
     "react-window": "^1.8.8"
   },
   "devDependencies": {
+    "@types/memoize-one": "^5.1.2",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "@types/react-virtualized": "^9.21.21",
