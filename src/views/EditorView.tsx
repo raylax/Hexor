@@ -1,4 +1,4 @@
-import {makeStyles, tokens} from '@fluentui/react-components'
+import {Button, makeStyles, tokens} from '@fluentui/react-components'
 import {app, dialog, Menu, webContents} from "@electron/remote"
 import fs from "node:fs"
 import prettyBytes from 'pretty-bytes'
@@ -9,6 +9,7 @@ import {DataRange} from '@/components/editor/types'
 import MenuItemConstructorOptions = Electron.MenuItemConstructorOptions
 import {COMMON_MENUS} from '@/menus'
 import {FileBuffer, newBuffer} from '@/file'
+import Inspector from '@/components/editor/Inspector'
 
 const useStyles = makeStyles({
   root: {
@@ -30,6 +31,12 @@ const useStyles = makeStyles({
     columnGap: tokens.spacingHorizontalMNudge,
     flexGrow: 1,
   },
+  buttonOpen: {
+    flexGrow: 1,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 })
 
 const EditorView = () => {
@@ -44,18 +51,22 @@ const EditorView = () => {
   const [selected, setSelected] = useState<DataRange>({ start: -1, end: -1 })
 
   const handleOpenFile = async () => {
-    const { canceled, filePaths: [path] } = await dialog.showOpenDialog({ properties: ['openFile'] })
-    if (canceled) return
-    console.time(`Open [${path}]`)
-    const stat = await fs.statSync(path)
-    setBytes(stat.size)
-    setBuffer(newBuffer(path))
-    console.timeEnd(`Open [${path}]`)
-    document.title = path
+    try {
+      const { canceled, filePaths: [path] } = await dialog.showOpenDialog({ properties: ['openFile'] })
+      if (canceled) return
+      const stat = await fs.statSync(path)
+      setBytes(stat.size)
+      setBuffer(newBuffer(path))
+      document.title = path
+    } catch (e: unknown) {
+      alert("打开文件错误")
+    }
   }
 
   const handleCloseFile = () => {
     buffer && buffer.close()
+    setBuffer(undefined)
+    setSelected({ start: -1, end: -1 })
   }
 
   const handleSelect = (range: DataRange) => {
@@ -83,14 +94,22 @@ const EditorView = () => {
 
   return (
     <div className={styles.root}>
-      {buffer && (
-        <>
-          <Header bytesPerRow={bytesPerRow} />
-          <div className={styles.container}>
-            <Data buffer={buffer} rows={rows} bytesPerRow={bytesPerRow} selected={selected} onSelect={handleSelect} />
+      {buffer
+        ? (
+          <>
+            <Header bytesPerRow={bytesPerRow} />
+            <div className={styles.container}>
+              <Data buffer={buffer} rows={rows} bytes={bytes} bytesPerRow={bytesPerRow} selected={selected} onSelect={handleSelect} />
+            </div>
+            {selected.start > -1 &&  <Inspector />}
+          </>
+        )
+        : (
+          <div className={styles.buttonOpen}>
+            <Button appearance="primary" size="large" onClick={handleOpenFile}>选择文件</Button>
           </div>
-        </>
-      )}
+        )
+      }
     </div>
   )
 }

@@ -1,14 +1,16 @@
-import React, {CSSProperties} from 'react'
-import {makeStyles, mergeClasses, tokens} from '@fluentui/react-components'
+import React from 'react'
+import {makeStyles, tokens} from '@fluentui/react-components'
 import {toAscii, toHex} from '@/utils'
 import {DataRange} from '@/components/editor/types'
 import {useSelectData} from '@/components/editor/hooks'
-import { FixedSizeList as List } from 'react-window'
+import {FixedSizeList as List, ListChildComponentProps} from 'react-window'
 import AutoSizer from "react-virtualized-auto-sizer"
 import {FileBuffer} from '@/file'
+import clsx from 'clsx'
 
 interface Props {
   buffer: FileBuffer
+  bytes: number
   rows: number
   bytesPerRow: number
   selected: DataRange
@@ -54,7 +56,7 @@ const Data: React.FC<Props> = (props) => {
   const styles = useStyles()
   const { isSelected, handleMouseDown, handleMouseMove, handleMouseUp } = useSelectData(props.bytesPerRow, props.selected, props.onSelect)
 
-  const renderRow = ({index, style}: { index: number, style: CSSProperties }) => {
+  const renderRow = ({index, isScrolling, style}: ListChildComponentProps) => {
 
 
     return (
@@ -65,7 +67,7 @@ const Data: React.FC<Props> = (props) => {
 
         <div>
           <span
-            className={mergeClasses(styles.item, styles.address)}
+            className={`${styles.item} ${styles.address}`}
           >
             {toHex(index * props.bytesPerRow, 8)}
           </span>
@@ -76,7 +78,7 @@ const Data: React.FC<Props> = (props) => {
             .map((_, col) => ({ col, address: calculateAddress(index, col) }))
             .map(({ col, address }) => (
               <span
-                className={mergeClasses(styles.item, isSelected(address) && styles.byteSelected)}
+                className={isSelected(address) ? clsx(styles.item, styles.byteSelected) : styles.item}
                 key={col}
                 onMouseDown={(e) => handleMouseDown(e, address)}
                 onMouseMove={() => handleMouseMove(address)}
@@ -93,7 +95,7 @@ const Data: React.FC<Props> = (props) => {
             .map(({ col, address }) => (
               <span
                 key={col}
-                className={mergeClasses(styles.item, styles.text, isSelected(address) && styles.textSelected)}
+                className={isSelected(address) ? clsx(styles.item, styles.text, styles.textSelected) : `${styles.item} ${styles.text}`}
                 onMouseDown={(e) => handleMouseDown(e, address)}
                 onMouseMove={() => handleMouseMove(address)}
               >

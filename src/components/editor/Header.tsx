@@ -8,17 +8,18 @@ interface Props {
 
 const useStyles = makeStyles({
   root: {
-    fontWeight: tokens.fontWeightSemibold,
+    fontWeight: tokens.fontWeightBold,
     display: 'flex',
-    columnGap: tokens.spacingHorizontalMNudge,
+    columnGap: tokens.spacingHorizontalXS,
   },
   index: {
     display: 'flex',
+    marginLeft: '80px',
   },
   indexItem: {
     paddingLeft: tokens.spacingHorizontalXS,
     paddingRight: tokens.spacingHorizontalXS,
-  }
+  },
 })
 
 const Header: React.FC<Props> = (props) => {
@@ -27,13 +28,12 @@ const Header: React.FC<Props> = (props) => {
 
   return (
     <div className={styles.root}>
-      <div>00000000</div>
       <div className={styles.index}>
         {[...Array(props.bytesPerRow)].map((_, i) => (
           <span className={styles.indexItem} key={i}>{toHex(i, 2)}</span>
         ))}
       </div>
-      <div>Text</div>
+      <div>Decoded Text</div>
     </div>
   )
 }
